@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b35">
+<meta name="description" content="PHOENIX SHOP — ရိုးရှင်းလွယ်ကူသော အွန်လိုင်းဆိုင်">
+<title>PHOENIX SHOP</title>
+<style>
+:root{--navy:#101b35;--navy2:#18294b;--cream:#f6f4ee;--ink:#172033;--muted:#68738a;--line:#e5e7eb;--teal:#16b8a6}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Myanmar",sans-serif}
+header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:white;padding:24px 18px 30px}
+.wrap{max-width:1080px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:21px;font-weight:850;letter-spacing:1.5px}.tag{color:#c8d4e8;font-size:13px;margin-top:4px}
+.pill{border:1px solid #52627f;color:white;border-radius:30px;padding:8px 13px;font-size:12px}
+.hero{padding:34px 0 12px}.hero h1{font-size:clamp(26px,5vw,42px);line-height:1.25;margin:0 0 10px}.hero p{color:#d4deee;max-width:620px;line-height:1.7;margin:0}
+main{max-width:1080px;margin:0 auto;padding:22px 18px 55px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 20px}
+input,select{font:inherit;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:white;color:var(--ink);min-width:0}
+#search{flex:1;min-width:180px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 14px}.section-title h2{font-size:20px;margin:0}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:15px}.card{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.photo{height:155px;background:#e8edf3;display:grid;place-items:center;color:#8793a8;font-size:42px}.photo img{width:100%;height:100%;object-fit:cover}.body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}.category{font-size:11px;color:#0c9487;font-weight:700}.name{font-size:16px;font-weight:750}.desc{font-size:13px;color:var(--muted);line-height:1.55;min-height:38px}.price{font-weight:800;font-size:18px;color:var(--navy)}button{border:0;border-radius:11px;padding:11px 13px;background:var(--navy);color:white;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.card button{margin-top:auto}.notice{background:white;border:1px dashed #cbd5e1;padding:20px;border-radius:14px;color:var(--muted);line-height:1.7}
+footer{background:var(--navy);color:#cbd5e1;padding:24px 18px;text-align:center;font-size:12px}
+.cartbar{position:sticky;bottom:12px;display:flex;justify-content:center;margin-top:22px;pointer-events:none}.cartbar button{pointer-events:auto;box-shadow:0 8px 25px #101b3540}
+#status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+@media(max-width:520px){.pill{display:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:120px}.body{padding:11px}.name{font-size:14px}.desc{font-size:12px}.price{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+ <div class="top"><div><div class="brand" id="shopName">PHOENIX SHOP</div><div class="tag">YOUR SHOP. YOUR STYLE.</div></div><div class="pill">ONLINE STORE</div></div>
+ <section class="hero"><h1 id="headline">ကြိုဆိုပါတယ်</h1><p id="about">PHOENIX SHOP မှာ သင်လိုချင်တဲ့ပစ္စည်းတွေကို လွယ်ကူစွာ ရှာဖွေကြည့်ရှုနိုင်ပါတယ်။</p></section>
+</div></header>
+<main>
+ <div class="toolbar"><input id="search" type="search" placeholder="ပစ္စည်းအမည်ဖြင့် ရှာရန်…" aria-label="Search products"><select id="category" aria-label="Category"><option value="">အမျိုးအစားအားလုံး</option></select></div>
+ <div class="section-title"><h2>ပစ္စည်းများ</h2><span class="muted" id="count"></span></div>
+ <section class="grid" id="products"></section>
+ <div id="empty" class="notice" hidden>ဒီဆိုင်မှာ ပစ္စည်းမတင်ရသေးပါ။ ဆိုင်ပိုင်ရှင်က products စာရင်းကို ထည့်သွင်းပြီးနောက် ဒီနေရာမှာ ပေါ်လာပါမယ်။</div>
+ <div class="cartbar"><button id="orderBtn" disabled>အော်ဒါစာရင်း (0) — ဆက်သွယ်ရန်</button></div>
+ <div id="status" role="status" aria-live="polite"></div>
+</main>
+<footer><div id="footerName">PHOENIX SHOP</div><div style="margin-top:6px">ဤစာမျက်နှာသည် Static Storefront ဖြစ်ပြီး အော်ဒါများကို Server တွင် အလိုအလျောက် မသိမ်းဆည်းပါ။</div></footer>
+<script>
+/*
+  ဆိုင်အချက်အလက်များကို ဒီနေရာမှာ ပြင်ဆင်ပါ။
+  price ကို ကျပ်ဖြင့် နံပါတ်ထည့်ပါ။ image မရှိလျှင် အလိုအလျောက် အမှတ်အသားပြပါမည်။
+*/
+const STORE = {
+  name: "PHOENIX SHOP",
+  headline: "ကြိုဆိုပါတယ်",
+  about: "PHOENIX SHOP မှာ သင်လိုချင်တဲ့ပစ္စည်းတွေကို လွယ်ကူစွာ ရှာဖွေကြည့်ရှုနိုင်ပါတယ်။",
+  telegramUsername: "", // ဥပမာ: your_shop_username ( @ မထည့်ပါနှင့် )
+  currency: "ကျပ်",
+  products: [
+    // { id:"p001", name:"ပစ္စည်းအမည်", category:"အထွေထွေ", price:5000, description:"အကြောင်းအရာ", image:"https://..." }
+  ]
+};
+const selected = new Map();
+const money = n => new Intl.NumberFormat("my-MM").format(Number(n)||0) + " " + STORE.currency;
+const $ = id => document.getElementById(id);
+$("shopName").textContent = STORE.name;
+$("footerName").textContent = STORE.name;
+$("headline").textContent = STORE.headline;
+$("about").textContent = STORE.about;
+const categories = [...new Set(STORE.products.map(p=>p.category).filter(Boolean))];
+categories.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;$("category").append(o)});
+function render(){
+ const q=$("search").value.trim().toLowerCase(), cat=$("category").value;
+ const list=STORE.products.filter(p=>(!cat||p.category===cat)&&(!q||[p.name,p.description,p.category].join(" ").toLowerCase().includes(q)));
+ $("count").textContent=list.length+" ခု";
+ $("products").replaceChildren();
+ $("empty").hidden=list.length!==0;
+ list.forEach(p=>{
+  const card=document.createElement("article");card.className="card";
+  const photo=document.createElement("div");photo.className="photo";
+  if(p.image){const img=document.createElement("img");img.src=p.image;img.alt=p.name;img.loading="lazy";img.onerror=()=>{photo.textContent="◇"};photo.append(img)}else photo.textContent="◇";
+  const body=document.createElement("div");body.className="body";
+  const cat=document.createElement("div");cat.className="category";cat.textContent=p.category||"အထွေထွေ";
+  const name=document.createElement("div");name.className="name";name.textContent=p.name;
+  const desc=document.createElement("div");desc.className="desc";desc.textContent=p.description||"";
+  const price=document.createElement("div");price.className="price";price.textContent=money(p.price);
+  const btn=document.createElement("button");btn.textContent=selected.has(p.id)?"စာရင်းထဲ ထည့်ပြီး":"အော်ဒါစာရင်းထဲထည့်ရန်";btn.onclick=()=>{selected.set(p.id,(selected.get(p.id)||0)+1);updateOrder();btn.textContent="စာရင်းထဲ ထည့်ပြီး"};
+  body.append(cat,name,desc,price,btn);card.append(photo,body);$("products").append(card);
+ });
+}
+function updateOrder(){let qty=0;selected.forEach(n=>qty+=n);$("orderBtn").textContent="အော်ဒါစာရင်း ("+qty+") — ဆက်သွယ်ရန်";$("orderBtn").disabled=qty===0}
+$("search").addEventListener("input",render);$("category").addEventListener("change",render);
+$("orderBtn").addEventListener("click",async()=>{
+ let lines=["မင်္ဂလာပါ။ "+STORE.name+" မှာ အော်ဒါမှာယူလိုပါတယ်။",""];
+ let total=0;
+ selected.forEach((qty,id)=>{const p=STORE.products.find(x=>x.id===id);if(p){lines.push(p.name+" × "+qty+" = "+money(p.price*qty));total+=p.price*qty}});
+ lines.push("","စုစုပေါင်း: "+money(total),"အမည်/လိပ်စာ: ");
+ const msg=lines.join("\n");
+ if(STORE.telegramUsername){
+  const url="https://t.me/"+STORE.telegramUsername.replace(/^@/,"")+"?text="+encodeURIComponent(msg);
+  window.open(url,"_blank","noopener");
+ }else{
+  try{await navigator.clipboard.writeText(msg);$("status").textContent="အော်ဒါစာသားကို Copy လုပ်ပြီးပါပြီ။ ဆိုင်ပိုင်ရှင်၏ Telegram username ကို STORE.telegramUsername ထဲ ထည့်ရန်လိုပါသည်။"}
+  catch{$("status").textContent=msg}
+ }
+});
+render();updateOrder();
+</script>
+</body>
+</html>
